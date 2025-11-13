@@ -3,13 +3,10 @@ import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { baseSepolia, base } from '@reown/appkit/networks'
 import { QueryClient } from '@tanstack/react-query'
 import { cookieToInitialState } from 'wagmi'
+import type { AppKitNetwork } from '@reown/appkit/networks'
 
 // Get projectId from environment variables
-export const projectId = import.meta.env.VITE_REOWN_PROJECT_ID
-
-if (!projectId) {
-  throw new Error('VITE_REOWN_PROJECT_ID is not set')
-}
+export const projectId = import.meta.env.VITE_REOWN_PROJECT_ID || ''
 
 // Set up metadata for the dApp
 export const metadata = {
@@ -20,11 +17,11 @@ export const metadata = {
 }
 
 // Configure networks - Using Base Sepolia for testnet and Base mainnet
-export const networks = [baseSepolia, base]
+const networksList: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepolia, base]
 
 // Create Wagmi Adapter with REOWN
 export const wagmiAdapter = new WagmiAdapter({
-  networks,
+  networks: networksList,
   projectId,
   ssr: true
 })
@@ -32,7 +29,7 @@ export const wagmiAdapter = new WagmiAdapter({
 // Create the AppKit instance with REOWN
 export const modal = createAppKit({
   adapters: [wagmiAdapter],
-  networks,
+  networks: networksList,
   projectId,
   metadata,
   features: {
