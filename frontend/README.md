@@ -33,13 +33,41 @@ A modern, decentralized savings application built with **React**, **Vite**, **RE
 3. **Edit \`.env\` file:**
    \`\`\`env
    VITE_REOWN_PROJECT_ID=your_reown_project_id_here
-   VITE_PIGGYBANK_ADDRESS=deployed_contract_address
+   VITE_PIGGYBANK_ADDRESS=your_deployed_piggybank_contract_address_here
    \`\`\`
 
    **To get a REOWN Project ID:**
    - Visit [REOWN Cloud](https://cloud.reown.com/)
    - Create a new project
    - Copy your Project ID
+
+   **🎯 Setting VITE_PIGGYBANK_ADDRESS:**
+
+   **💻 Local Development:**
+   - **Option A - Local Network:**
+     1. Deploy contract to local Hardhat/Foundry network
+     2. Copy address from deployment output
+     3. \`VITE_PIGGYBANK_ADDRESS=0x1234567890123456789012345678901234567890\`
+
+   - **Option B - Shared Testnet:**
+     1. Get testnet address from your development team
+     2. \`VITE_PIGGYBANK_ADDRESS=0xabcdefabcdefabcdefabcdefabcdefabcdefabcd\`
+
+   **🌐 Base Sepolia Testnet:**
+   1. Deploy contract to Base Sepolia testnet
+   2. Find address at [Base Sepolia Explorer](https://sepolia.basescan.org/)
+   3. \`VITE_PIGGYBANK_ADDRESS=0x1234567890123456789012345678901234567890\`
+
+   **🚀 Base Mainnet (Production):**
+   1. Deploy contract to Base mainnet
+   2. Verify on [BaseScan](https://basescan.org/)
+   3. \`VITE_PIGGYBANK_ADDRESS=0xabcdefabcdefabcdefabcdefabcdefabcdefabcd\`
+
+   **⚠️  Critical Notes:**
+   - Testnet and mainnet addresses are **NOT interchangeable**
+   - Frontend fails to load with incorrect/missing address
+   - Always match the address to your target network
+   - Share testnet addresses within your team for consistent testing
 
 ## 🎯 Available Scripts
 
