@@ -1,74 +1,74 @@
 // Environment Variable Validation Utility
 
 /**
- * Validates an Ethereum address format
- * @param address - The address to validate
- * @returns Object with isValid flag and error message if invalid
+ * Determines if the current environment requires strict validation
+ * Strict validation is enabled for CI, production builds, and non-dev environments
  */
-function validateEthereumAddress(address: string | undefined): {
-  isValid: boolean
-  error?: string
-} {
-  if (!address) {
-    return { isValid: false }
-  }
+function isStrictValidationEnabled(): boolean {
+  // Check if running in CI environment
+  const isCI = Boolean(
+    process.env.CI ||
+    process.env.GITHUB_ACTIONS ||
+    process.env.GITLAB_CI ||
+    process.env.CIRCLECI ||
+    process.env.TRAVIS ||
+    process.env.JENKINS_URL
+  )
 
-  // Check if address starts with '0x'
-  if (!address.startsWith('0x')) {
-    return {
-      isValid: false,
-      error: 'VITE_PIGGYBANK_ADDRESS must be a valid Ethereum address starting with "0x" (e.g., 0x1234...5678)'
-    }
-  }
+  // Strict validation in production build or CI
+  const isProduction = import.meta.env.PROD
+  const isDevelopment = import.meta.env.DEV
 
-  // Check if address has correct length (42 characters including '0x')
-  if (address.length !== 42) {
-    return {
-      isValid: false,
-      error: `VITE_PIGGYBANK_ADDRESS must be exactly 42 characters long (including "0x"). Current length: ${address.length}`
-    }
-  }
-
-  // Check if remaining characters are valid hex
-  const hexPart = address.slice(2)
-  const isValidHex = /^[0-9a-fA-F]+$/.test(hexPart)
-  if (!isValidHex) {
-    return {
-      isValid: false,
-      error: 'VITE_PIGGYBANK_ADDRESS must contain only valid hexadecimal characters (0-9, a-f, A-F) after "0x"'
-    }
-  }
-
-  return { isValid: true }
+  return isCI || isProduction || !isDevelopment
 }
 
 export function validateEnvironment() {
   const errors: string[] = []
   const warnings: string[] = []
+  const isStrict = isStrictValidationEnabled()
 
   // Check REOWN Project ID
   const projectId = import.meta.env.VITE_REOWN_PROJECT_ID
   if (!projectId) {
-    errors.push('VITE_REOWN_PROJECT_ID is not set. Get one from https://cloud.reown.com/')
+    errors.push(
+      'VITE_REOWN_PROJECT_ID is not set. ' +
+      'Get one from https://cloud.reown.com/ ' +
+      'This is required for wallet connection functionality.'
+    )
   } else if (projectId.length < 32) {
     warnings.push('VITE_REOWN_PROJECT_ID seems too short. Verify it is correct.')
   }
 
-  // Check PiggyBank Address with consolidated validation
+  // Check PiggyBank Address - strict validation in CI/production
   const contractAddress = import.meta.env.VITE_PIGGYBANK_ADDRESS
   if (!contractAddress) {
-    warnings.push('VITE_PIGGYBANK_ADDRESS is not set. Smart contract features will not work until you deploy and configure the contract address.')
-  } else {
-    const addressValidation = validateEthereumAddress(contractAddress)
-    if (!addressValidation.isValid && addressValidation.error) {
-      errors.push(addressValidation.error)
+    const message =
+      'VITE_PIGGYBANK_ADDRESS is not set. ' +
+      'The application cannot interact with the smart contract without this address. ' +
+      'Deploy your contract and set this variable in your .env file.'
+
+    if (isStrict) {
+      // Error in CI/production - this should block builds
+      errors.push(message)
+    } else {
+      // Warning in local dev - allows developers to work on UI without contract
+      warnings.push(message + ' (This will be an error in CI/production builds)')
     }
+  } else if (!contractAddress.startsWith('0x')) {
+    errors.push('VITE_PIGGYBANK_ADDRESS must start with "0x"')
+  } else if (contractAddress.length !== 42) {
+    errors.push('VITE_PIGGYBANK_ADDRESS must be 42 characters (including "0x")')
   }
 
   // Log results
   if (errors.length > 0) {
     console.error('❌ Environment Configuration Errors:')
     errors.forEach(error => console.error(`  - ${error}`))
+
+    if (isStrict) {
+      console.error('\n🚫 Build cannot proceed with missing required environment variables.')
+      console.error('Please check your .env file or CI/CD environment variable configuration.')
+    }
   }
 
   if (warnings.length > 0) {
@@ -83,7 +83,8 @@ export function validateEnvironment() {
   return {
     isValid: errors.length === 0,
     errors,
-    warnings
+    warnings,
+    isStrict
   }
 }
 
