@@ -41,6 +41,12 @@ A modern, decentralized savings application built with **React**, **Vite**, **RE
    - Create a new project
    - Copy your Project ID
 
+   **Environment Variable Validation:**
+   - `VITE_REOWN_PROJECT_ID`: **Required** - Always causes build error if missing
+   - `VITE_PIGGYBANK_ADDRESS`: **Required in CI/Production** - Causes error in CI/production builds, warning in local development
+   - Validation runs automatically on application startup
+   - Missing required variables will block CI/CD builds to prevent runtime failures
+
 ## 🎯 Available Scripts
 
 ### Development
@@ -67,6 +73,22 @@ npm run lint
 \`\`\`
 Check code for linting errors
 
+### Test
+\`\`\`bash
+npm test
+\`\`\`
+Run all unit and component tests
+
+\`\`\`bash
+npm run test:ui
+\`\`\`
+Run tests with Vitest UI
+
+\`\`\`bash
+npm run test:coverage
+\`\`\`
+Generate test coverage report
+
 ## 🏗️ Project Structure
 
 \`\`\`
@@ -77,13 +99,19 @@ frontend/
 │   │   ├── PiggyBankDashboard.tsx
 │   │   ├── BalanceCard.tsx  # Balance display with countdown
 │   │   ├── DepositForm.tsx  # Deposit ETH form
-│   │   └── WithdrawButton.tsx
+│   │   ├── WithdrawButton.tsx
+│   │   ├── BalanceCard.test.tsx      # BalanceCard tests
+│   │   ├── DepositForm.test.tsx      # DepositForm tests
+│   │   └── WithdrawButton.test.tsx   # WithdrawButton tests
 │   ├── config/              # Configuration files
 │   │   ├── wagmi.ts         # REOWN AppKit & Wagmi setup
 │   │   └── contracts.ts     # Smart contract ABIs & addresses
 │   ├── hooks/               # Custom React hooks
 │   │   ├── usePiggyBank.ts  # Contract interaction hook
-│   │   └── useTimelock.ts   # Time lock countdown logic
+│   │   ├── useTimelock.ts   # Time lock countdown logic
+│   │   └── useTimelock.test.ts       # useTimelock tests
+│   ├── test/                # Test setup
+│   │   └── setup.ts         # Vitest configuration
 │   ├── App.tsx              # Main app component
 │   ├── main.tsx             # Entry point
 │   ├── App.css              # Component styles
@@ -106,6 +134,40 @@ frontend/
 | **Viem** | Lightweight Ethereum library |
 | **TanStack Query** | Async state management |
 | **Base Network** | Layer 2 blockchain |
+| **Vitest** | Testing framework |
+| **React Testing Library** | Component testing utilities |
+
+## 🧪 Testing
+
+This project includes comprehensive test coverage for all lock/unlock and countdown functionality.
+
+### Test Coverage
+- **useTimelock Hook** (23 tests): Time calculations, state transitions, edge cases
+- **BalanceCard Component** (15 tests): Lock/unlock states, countdown rendering
+- **WithdrawButton Component** (20 tests): Button states, balance validation
+- **DepositForm Component** (27 tests): Form validation, lock info formatting
+
+### Running Tests
+\`\`\`bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm test -- --watch
+
+# Run tests with UI
+npm run test:ui
+
+# Generate coverage report
+npm run test:coverage
+\`\`\`
+
+All tests validate:
+- ✅ Time calculations (days, hours, minutes, seconds)
+- ✅ Countdown updates and transitions
+- ✅ Lock/unlock state rendering
+- ✅ Edge cases (past times, exact boundaries, large values)
+- ✅ Time travel scenarios with fake timers
 
 ## 🌐 REOWN & WalletConnect Integration
 
