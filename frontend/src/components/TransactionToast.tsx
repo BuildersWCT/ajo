@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useWatchPendingTransactions } from 'wagmi'
+import { useState, useEffect } from 'react'
+import { useWatchPendingTransactions, useWaitForTransactionReceipt } from 'wagmi'
 
 interface Toast {
   id: string
@@ -10,7 +10,9 @@ interface Toast {
 
 export function TransactionToast() {
   const [toasts, setToasts] = useState<Toast[]>([])
+  const [pendingTxHash, setPendingTxHash] = useState<`0x${string}` | undefined>()
 
+  // Watch for pending transactions
   useWatchPendingTransactions({
     onTransactions(transactions) {
       transactions.forEach((tx) => {
@@ -20,17 +22,65 @@ export function TransactionToast() {
           type: 'pending',
           txHash: tx,
         })
+        // Set the first pending transaction for confirmation watching
+        if (!pendingTxHash) {
+          setPendingTxHash(tx as `0x${string}`)
+        }
       })
     },
   })
 
+  // Watch for transaction confirmation
+  const { isSuccess, isError } = useWaitForTransactionReceipt({
+    hash: pendingTxHash,
+  })
+
+  // Handle successful transaction
+  useEffect(() => {
+    if (isSuccess && pendingTxHash) {
+      // Remove pending toast
+      removeToast(pendingTxHash)
+
+      // Add success toast
+      addToast({
+        id: `${pendingTxHash}-success`,
+        message: 'Transaction confirmed successfully!',
+        type: 'success',
+        txHash: pendingTxHash,
+      })
+
+      // Reset pending hash
+      setPendingTxHash(undefined)
+    }
+  }, [isSuccess, pendingTxHash])
+
+  // Handle failed transaction
+  useEffect(() => {
+    if (isError && pendingTxHash) {
+      // Remove pending toast
+      removeToast(pendingTxHash)
+
+      // Add error toast
+      addToast({
+        id: `${pendingTxHash}-error`,
+        message: 'Transaction failed. Please try again.',
+        type: 'error',
+        txHash: pendingTxHash,
+      })
+
+      // Reset pending hash
+      setPendingTxHash(undefined)
+    }
+  }, [isError, pendingTxHash])
+
   const addToast = (toast: Toast) => {
     setToasts((prev) => [...prev, toast])
 
-    // Auto-remove after 5 seconds
+    // Auto-remove after 5 seconds for success/error, 10 seconds for pending
+    const timeout = toast.type === 'pending' ? 10000 : 5000
     setTimeout(() => {
       removeToast(toast.id)
-    }, 5000)
+    }, timeout)
   }
 
   const removeToast = (id: string) => {
