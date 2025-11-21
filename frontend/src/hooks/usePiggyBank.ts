@@ -1,5 +1,5 @@
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
-import { formatEther, parseEther } from 'viem'
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useWatchContractEvent } from 'wagmi'
+import { parseEther } from 'viem'
 import { PIGGYBANK_ABI, PIGGYBANK_ADDRESS } from '../config/contracts'
 
 interface Transaction {
@@ -19,6 +19,30 @@ export function usePiggyBank() {
     address: PIGGYBANK_ADDRESS,
     abi: PIGGYBANK_ABI,
     functionName: 'getBalance',
+  })
+
+  // Watch for Deposited events
+  useWatchContractEvent({
+    address: PIGGYBANK_ADDRESS,
+    abi: PIGGYBANK_ABI,
+    eventName: 'Deposited',
+    onLogs(logs) {
+      console.log('Deposited event:', logs)
+      // Automatically refetch balance when deposit event is detected
+      refetchBalance()
+    },
+  })
+
+  // Watch for Withdrawn events
+  useWatchContractEvent({
+    address: PIGGYBANK_ADDRESS,
+    abi: PIGGYBANK_ABI,
+    eventName: 'Withdrawn',
+    onLogs(logs) {
+      console.log('Withdrawn event:', logs)
+      // Automatically refetch balance when withdrawal event is detected
+      refetchBalance()
+    },
   })
 
   // Read unlock time
