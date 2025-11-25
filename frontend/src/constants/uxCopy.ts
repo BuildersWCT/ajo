@@ -30,6 +30,7 @@ export const MESSAGES = {
   LOCKED_FOR_DAYS: 'Locked for approximately {n} day(s)',
   LOCKED_FOR_HOURS: 'Locked for approximately {n} hour(s)',
   NO_FUNDS: 'No funds available to withdraw',
+  DEPOSIT_SUCCESS: 'Deposit successful! Your ETH is now locked.',
   UNSUPPORTED_NETWORK: 'Unsupported network. Please switch to Base.',
 };
 
