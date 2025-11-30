@@ -6,11 +6,16 @@ pragma solidity ^0.8.20;
  * @notice A time-locked savings contract for disciplined ETH deposits
  * @dev Users can deposit ETH and withdraw only after a specified unlock time
  */
+contract PiggyBank {
     address public owner;
     uint256 public unlockTime;
+    bool public paused;
 
     event Deposited(address indexed depositor, uint256 amount);
     event Withdrawn(address indexed withdrawer, uint256 amount);
+    event Paused(address account);
+    event Unpaused(address account);
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     constructor(uint256 _unlockTime) payable {
         owner = msg.sender;
