@@ -78,11 +78,7 @@ export function DepositForm() {
           : 'Deposit ETH'}
       </button>
 
-      {isSuccess && (
-        <div className="success-message">
-          ✅ Deposit successful! Your ETH is now locked.
-        </div>
-      )}
+
     </form>
   )
 }
