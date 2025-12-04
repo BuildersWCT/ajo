@@ -5,6 +5,8 @@ import { useMobile } from '../hooks/useMobile';
 import { BUTTONS, LABELS, MESSAGES, VALIDATION } from '../constants/uxCopy';
 import { formatLockTime } from '../constants/uxCopy';
 import { useSecureAlert } from './SecureNotification';
+import { SecureInput } from './ui/SecureInput';
+import { validateEthAmount } from '../utils/security';
 
 interface DepositFormProps {
   amount: string;
@@ -21,6 +23,9 @@ export function DepositForm({ onAmountChange }: DepositFormProps) {
   const { timeRemaining } = useTimelock(unlockTime)
   const { error: showError } = useSecureAlert()
   const isMobile = useMobile()
+  const [secureAmount, setSecureAmount] = useState('')
+  const [amountValid, setAmountValid] = useState(false)
+  const [validationError, setValidationError] = useState('')
 
   // Notify parent component of amount changes
   useEffect(() => {
@@ -32,9 +37,50 @@ export function DepositForm({ onAmountChange }: DepositFormProps) {
   useEffect(() => {
     if (isSuccess) {
       setAmount('')
+      setSecureAmount('')
+      setAmountValid(false)
+      setValidationError('')
       refetchBalance()
     }
   }, [isSuccess, refetchBalance, setAmount])
+
+  const handleAmountChange = (value: string, isValid: boolean) => {
+    setSecureAmount(value)
+    setAmountValid(isValid)
+    setValidationError('')
+    
+    if (isValid && value) {
+      setAmount(value)
+    } else {
+      setAmount('')
+    }
+  }
+
+  const handleDeposit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!secureAmount || !amountValid) {
+      setValidationError('Please enter a valid amount')
+      showError('Invalid Amount', VALIDATION.INVALID_AMOUNT);
+      return;
+    }
+
+    const numAmount = parseFloat(secureAmount)
+    if (isNaN(numAmount) || numAmount <= 0) {
+      setValidationError('Amount must be greater than 0')
+      showError('Invalid Amount', VALIDATION.INVALID_AMOUNT);
+      return;
+    }
+
+    // Additional security check - validate ETH amount using security utils
+    const ethValidation = validateEthAmount(secureAmount)
+    if (!ethValidation.isValid) {
+      setValidationError(ethValidation.errors.join(', '))
+      showError('Invalid Amount', 'Security validation failed');
+      return;
+    }
+
+    deposit(secureAmount);
 
   const handleDeposit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,15 +110,19 @@ export function DepositForm({ onAmountChange }: DepositFormProps) {
   return (
     <form className="deposit-form" onSubmit={handleDeposit}>
       <div className="form-group">
-        <label htmlFor="amount">{LABELS.AMOUNT_ETH}</label>
-        <input
+        <SecureInput
           id="amount"
-          type="number"
-          step="0.001"
-          min="0"
+          label={LABELS.AMOUNT_ETH}
+          type="text"
+          value={secureAmount}
+          onChange={handleAmountChange}
+          validationType="amount"
           placeholder={LABELS.AMOUNT_PLACEHOLDER}
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          maxLength={20}
+          securityMode="strict"
+          showValidation={true}
+          error={validationError}
+          helperText="Enter the amount of ETH to deposit"
           disabled={isPending || isConfirming}
         />
       </div>
