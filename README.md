@@ -10,11 +10,11 @@ The Ajo PiggyBank dApp is built to encourage disciplined savings by enforcing ti
 
 Key capabilities:
 
-- Connect an Ethereum wallet using **REOWN AppKit** with **WalletConnect v2**.
-- Deposit ETH into a personal piggy bank contract.
-- Configure time-locked savings with enforced lock periods.
-- View real-time balance, lock status, and countdown timer.
-- Withdraw funds only after the configured unlock time has passed.
+- Connect an Ethereum wallet using **REOWN AppKit** with **WalletConnect v2**
+- Deposit ETH into a personal piggy bank contract
+- Configure time-locked savings with enforced lock periods
+- View real-time balance, lock status, and countdown timer
+- Withdraw funds only after the configured unlock time has passed
 
 > **Scope of this repository:** only the frontend lives here (in `frontend/`). The `PiggyBank` smart contract itself should be managed in a dedicated Solidity/Foundry repository and deployed separately to Base testnet or mainnet.
 
