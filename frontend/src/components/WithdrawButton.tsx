@@ -57,8 +57,6 @@ export function WithdrawButton() {
             ? 'Waiting for approval...'
             : isConfirming
             ? 'Withdrawing...'
-            : isSuccess
-            ? 'Withdrawn!'
             : `Withdraw All (${balance ? formatEther(balance) : '0'} ETH)`}
         </button>
         {balance && balance > 0 && (
