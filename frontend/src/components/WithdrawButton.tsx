@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
-import { usePiggyBank } from '../hooks/usePiggyBank'
-import { useTimelock } from '../hooks/useTimelock'
-import { formatEther } from 'viem'
+import { useEffect } from 'react';
+import { usePiggyBank } from '../hooks/usePiggyBank';
+import { useTimelock } from '../hooks/useTimelock';
+import { formatEther } from 'viem';
+import { BUTTONS, MESSAGES, VALIDATION } from '../constants/uxCopy';
 
 export function WithdrawButton() {
   const { balance, unlockTime, withdraw, isPending, isConfirming, isSuccess, refetchBalance } = usePiggyBank()
@@ -15,15 +16,15 @@ export function WithdrawButton() {
 
   const handleWithdraw = () => {
     if (!isUnlocked) {
-      alert('Your funds are still locked. Please wait until the unlock time.')
-      return
+      alert(VALIDATION.LOCKED_FUNDS);
+      return;
     }
     if (!balance || balance === BigInt(0)) {
-      alert('No funds available to withdraw')
-      return
+      alert(MESSAGES.NO_FUNDS);
+      return;
     }
-    withdraw()
-  }
+    withdraw();
+  };
 
   return (
     <div className="withdraw-section">
@@ -32,15 +33,13 @@ export function WithdrawButton() {
           <div className="warning-box">
             <span className="icon">⏰</span>
             <p>
-              Your funds are currently locked. You can withdraw once the lock
-              period expires.
+              {VALIDATION.LOCKED_FUNDS}
             </p>
           </div>
         ) : (
           <div className="success-box">
-            <span className="icon">✅</span>
             <p>
-              Your funds are unlocked! You can now withdraw your ETH.
+              {MESSAGES.UNLOCKED}
             </p>
           </div>
         )}
@@ -65,7 +64,6 @@ export function WithdrawButton() {
           </p>
         )}
       </div>
-
 
     </div>
   )
