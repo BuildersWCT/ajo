@@ -73,8 +73,6 @@ export function DepositForm() {
           ? 'Waiting for approval...'
           : isConfirming
           ? 'Depositing...'
-          : isSuccess
-          ? 'Deposited!'
           : 'Deposit ETH'}
       </button>
 
