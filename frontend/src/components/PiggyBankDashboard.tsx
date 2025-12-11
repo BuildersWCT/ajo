@@ -54,15 +54,11 @@ function SaveForLaterButton({
 }
 
 export function PiggyBankDashboard() {
-  const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw'>('deposit')
-  const [amount, setAmount] = useState('')
-  const [savedStates, setSavedStates] = useState<SavedState[]>(() => {
-    const saved = localStorage.getItem('savedPiggyStates')
-    return saved ? JSON.parse(saved) : []
-  })
-  const [savedStates, setSavedStates] = useState<SavedState[]>([])
-  const [showSavedStates, setShowSavedStates] = useState(false)
-  const [currentAmount, setCurrentAmount] = useState('')
+  const [activeTab, setActiveTab] = useState<'deposit' | 'withdraw'>('deposit');
+  const [amount, setAmount] = useState('');
+  const [savedStates, setSavedStates] = useState<SavedState[]>([]);
+  const [showSavedStates, setShowSavedStates] = useState(false);
+  const [currentAmount, setCurrentAmount] = useState('');
 
   // Load saved states on component mount
   useEffect(() => {
