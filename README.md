@@ -49,7 +49,7 @@ Key capabilities:
 
 Use this if you want to run both the contracts (in your own Foundry repo) and the frontend locally:
 
-1. Contracts (in your contracts repo):
+1. **Contracts (in your contracts repo):**
 
    ```bash
    forge install
@@ -58,7 +58,7 @@ Use this if you want to run both the contracts (in your own Foundry repo) and th
    # deploy and copy the deployed PiggyBank address
    ```
 
-2. Frontend (in this repo):
+2. **Frontend (in this repo):**
 
    ```bash
    cd frontend
