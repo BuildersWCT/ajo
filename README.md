@@ -4,6 +4,13 @@ Ajo PiggyBank is a decentralized savings application that allows users to deposi
 
 ---
 
+💡 **Key Features:**
+- **Time-locked savings** with enforced lock periods
+- **Wallet integration** via REOWN AppKit and WalletConnect v2
+- **Real-time balance tracking** with countdown timers
+- **Multi-network support** (Local, Base Sepolia, Base Mainnet)
+- **Comprehensive diagnostics** for development and troubleshooting
+
 ## 📖 Table of Contents
 
 - [Overview](#overview)
