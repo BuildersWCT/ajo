@@ -32,6 +32,8 @@ Consistent UI text for the Ajo PiggyBank dApp. Keep tone concise, friendly, and 
 - Error tx: "Transaction failed"
 - Explorer link: "View on Explorer →"
 
+**Note:** All transaction states are handled consistently through the TransactionToast component, which always shows clear feedback for pending, success, and error states.
+
 ## Warnings and errors
 - Invalid amount: "Please enter a valid amount"
 - Locked funds: "Your funds are still locked. Please wait until the unlock time."

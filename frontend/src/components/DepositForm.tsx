@@ -133,17 +133,9 @@ export function DepositForm({ onAmountChange }: DepositFormProps) {
         {isPending
           ? 'Waiting for approval...'
           : isConfirming
-          ? 'Processing...'
-          : isSuccess
-          ? 'Deposited!'
-          : BUTTONS.DEPOSIT_ETH}
+          ? 'Depositing...'
+          : 'Deposit ETH'}
       </button>
-
-      {isSuccess && (
-        <div className="success-message">
-          ✅ {MESSAGES.DEPOSIT_SUCCESS}
-        </div>
-      )}
     </form>
   );
 }
