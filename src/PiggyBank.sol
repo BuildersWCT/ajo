@@ -96,9 +96,13 @@ contract PiggyBank {
         _;
     }
 
+    bool private _reentrancyGuard;
+
     modifier nonReentrant() {
-        if (paused) revert PiggyBank__Paused();
+        if (_reentrancyGuard) revert PiggyBank__ReentrancyAttack();
+        _reentrancyGuard = true;
         _;
+        _reentrancyGuard = false;
     }
 
     modifier validUnlockTime(uint256 _unlockTime) {
@@ -129,7 +133,7 @@ contract PiggyBank {
      * @dev Accepts direct ETH transfers
      */
     receive() external payable {
-        deposit();
+        this.deposit{value: msg.value}();
     }
 
     /**
@@ -189,11 +193,12 @@ contract PiggyBank {
         deposits[msg.sender] = 0;
         totalWithdrawals += amount;
 
-        emit Withdrawn(msg.sender, amount, block.timestamp);
-
         // Safe transfer with gas optimization
         (bool success, ) = payable(msg.sender).call{value: amount}("");
         if (!success) revert PiggyBank__TransferFailed();
+
+        // Emit event after successful transfer (checks-effects-interactions pattern)
+        emit Withdrawn(msg.sender, amount, block.timestamp);
     }
 
     /**
@@ -212,11 +217,12 @@ contract PiggyBank {
         deposits[user] = 0;
         totalWithdrawals += amount;
 
-        emit EmergencyWithdrawal(user, amount);
-
         // Safe transfer
         (bool success, ) = payable(user).call{value: amount}("");
         if (!success) revert PiggyBank__TransferFailed();
+
+        // Emit event after successful transfer (checks-effects-interactions pattern)
+        emit EmergencyWithdrawal(user, amount);
     }
 
     // ============ ADMIN FUNCTIONS ============
@@ -327,13 +333,13 @@ contract PiggyBank {
         external
         view
         returns (
-            uint256 deposit,
+            uint256 userDeposit,
             uint256 timestamp,
             uint256 count,
             uint256 timeRemaining
         )
     {
-        deposit = deposits[user];
+        userDeposit = deposits[user];
         timestamp = depositTimestamps[user];
         count = userDepositCount[user];
 
