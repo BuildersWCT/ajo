@@ -89,14 +89,14 @@ export function usePiggyBank() {
 
   // Admin functions
   const { data: totalDeposits } = useReadContract({
-    address: PIGGYBANK_ABI,
+    address: PIGGYBANK_ADDRESS,
     abi: PIGGYBANK_ABI,
     functionName: 'totalDeposits',
     query: { enabled: !!address && address === owner },
   })
 
   const { data: totalWithdrawals } = useReadContract({
-    address: PIGGYBANK_ABI,
+    address: PIGGYBANK_ADDRESS,
     abi: PIGGYBANK_ABI,
     functionName: 'totalWithdrawals',
     query: { enabled: !!address && address === owner },
