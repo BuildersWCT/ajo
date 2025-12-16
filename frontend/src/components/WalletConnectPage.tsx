@@ -101,7 +101,11 @@ export function WalletConnectPage() {
                   <div className="history-icon">🔗</div>
                   <div className="history-details">
                     <div className="history-address">
-                      {connection.address.slice(0, 6)}...{connection.address.slice(-4)}
+                      {(() => {
+                        // Sanitize address to prevent XSS
+                        const sanitizedAddress = connection.address.replace(/[<>'"&]/g, '');
+                        return `${sanitizedAddress.slice(0, 6)}...${sanitizedAddress.slice(-4)}`;
+                      })()}
                     </div>
                     <div className="history-meta">
                       Chain ID: {connection.chainId} • {new Date(connection.connectedAt).toLocaleDateString()}

@@ -126,6 +126,22 @@ export function usePiggyBank() {
       abi: PIGGYBANK_ABI,
       functionName: 'withdraw',
     })
+  }
+
+  // Admin functions
+  const { data: totalDeposits } = useReadContract({
+    address: PIGGYBANK_ADDRESS,
+    abi: PIGGYBANK_ABI,
+    functionName: 'totalDeposits',
+    query: { enabled: !!address && address === owner },
+  })
+
+  const { data: totalWithdrawals } = useReadContract({
+    address: PIGGYBANK_ADDRESS,
+    abi: PIGGYBANK_ABI,
+    functionName: 'totalWithdrawals',
+    query: { enabled: !!address && address === owner },
+  })
   }, [address, writeContract])
 
   // Memoize admin check
